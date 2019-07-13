@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import dev.joey.nmz.util.ApiResponse;
 import dev.joey.nmz.util.PingData;
+import dev.joey.nmz.util.PingResponse;
 import org.json.JSONObject;
 import org.rspeer.script.Script;
 
@@ -39,29 +40,37 @@ public class HttpService {
     public static boolean stopSession() {
         try {
             HttpResponse<JsonNode> response = Unirest
-                    .get(API_URL + " session/?session_id={session_id}")
+                    .get(API_URL + "session/stop/?session_id={session_id}")
                     .header("Accept", "application/json")
                     .routeParam("session_id", SessionService.getSessionId())
                     .asJson();
-            int statusCode = response.getStatus();
-            return statusCode == 200;
+            JSONObject obj = response.getBody().getObject();
+            String status = obj.getString("status");
+            if (!status.equals(ApiResponse.SUCCESS.toString())) return false;
+            return response.getStatus() == 200;
         } catch (UnirestException _e) {
             return false;
         }
     }
 
-    public static boolean updateSession(PingData data) {
+    public static PingResponse updateSession(PingData data) {
         try {
             HttpResponse<JsonNode> response = Unirest
-                    .get(API_URL + " ping/?session_id={session_id}&status={status}&screenshot={screenshot}")
+                    .get(API_URL + "session/ping/?session_id={session_id}&status={status}&screenshot={screenshot}")
+                    .header("Accept", "application/json")
                     .routeParam("session_id", SessionService.getSessionId())
                     .routeParam("status", data.getStatus())
-                    .routeParam("screenshot", data.getScreenshot())
+                    .routeParam("screenshot", "todo")
                     .asJson();
+            JSONObject obj = response.getBody().getObject();
+            String status = obj.getString("status");
+            if (!status.equals(ApiResponse.SUCCESS.toString())) return PingResponse.ERROR;
             int statusCode = response.getStatus();
-            return statusCode == 200;
+            if (statusCode == 200) return PingResponse.SUCCESS;
+            if (statusCode == 403) return PingResponse.INSUFFICIENT_ACCESS;
+            return PingResponse.ERROR;
         } catch (UnirestException _e) {
-            return false;
+            return PingResponse.ERROR;
         }
     }
 

@@ -1,20 +1,28 @@
 package dev.joey.nmz.services;
 
+import org.rspeer.runetek.adapter.component.Item;
+import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.ui.Log;
 
 import java.util.Random;
+import java.util.function.Predicate;
 
 public class PrayerService {
 
     private static int prayerThreshold = Integer.MIN_VALUE;
+    public static Predicate<Item> POTION_PREDICATE = (item) -> item.getName().startsWith("Prayer potion") || item.getName().startsWith("Super restore");
 
     public static boolean shouldDrink() {
         if (prayerThreshold == Integer.MIN_VALUE)
             generatePrayerThreshold();
 
         return Skills.getCurrentLevel(Skill.PRAYER) <= prayerThreshold;
+    }
+
+    public static boolean hasPotion() {
+        return Inventory.contains(POTION_PREDICATE);
     }
 
     public static void generatePrayerThreshold() {

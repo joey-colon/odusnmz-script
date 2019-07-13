@@ -7,7 +7,6 @@ import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.script.task.Task;
-import org.rspeer.ui.Log;
 
 import java.util.function.Predicate;
 
@@ -16,7 +15,7 @@ public class DrinkOverload extends Task {
 
     @Override
     public boolean validate() {
-        return Skills.getCurrentLevel(Skill.HITPOINTS) == Skills.getLevel(Skill.HITPOINTS)
+        return Skills.getCurrentLevel(Skill.ATTACK) == Skills.getLevel(Skill.ATTACK)
                 && Inventory.contains(OVERLOAD);
     }
 

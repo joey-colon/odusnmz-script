@@ -7,20 +7,16 @@ import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.script.task.Task;
 
-import java.util.function.Predicate;
-
 public class DrinkPrayerPotion extends Task {
-
-    public static Predicate<Item> POTION = (item) -> item.getName().startsWith("Prayer potion") || item.getName().startsWith("Super restore");
 
     @Override
     public boolean validate() {
-        return PrayerService.shouldDrink() && Inventory.contains(POTION);
+        return PrayerService.shouldDrink() && PrayerService.hasPotion();
     }
 
     @Override
     public int execute() {
-        Item pot = Inventory.getFirst(POTION);
+        Item pot = Inventory.getFirst(PrayerService.POTION_PREDICATE);
         if (pot == null) return 600;
         SleepService.sleepRandom(1.2);
 
